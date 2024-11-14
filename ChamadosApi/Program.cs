@@ -1,8 +1,14 @@
+using ChamadosApi.Dominio.Aplicacao;
+using ChamadosApi.Infraestrutura;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddScoped<GravarChamadoHandler>();
+builder.Services.AddScoped<RabbitMQProducer>();
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
