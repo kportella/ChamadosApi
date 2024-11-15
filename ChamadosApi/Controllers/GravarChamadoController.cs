@@ -14,12 +14,18 @@ public class GravarChamadoController : ControllerBase
     [HttpPost("GravarChamado")]
     public async Task<IActionResult> GravarChamado([FromBody] GravarChamadoRequest request, [FromServices] GravarChamadoHandler handler)
     {
-        var comando = GravarChamadoCommand.Criar(request.Titulo, request.Descricao, 
+        var comandoResult = GravarChamadoCommand.Criar(request.Titulo, request.Descricao, 
             request.TipoManutencao, request.Criticidade, request.Tecnico, request.DataAbertura, request.DataFechamento, 
             request.Status, request.Equipamento, request.Localizacao, request.Modelo);
         
-        var resultHandler = await handler.Handle(comando.Value);
+        if (comandoResult.IsFailure)
+            return BadRequest(comandoResult.Error);
         
-        return Ok();
+        var resultHandler = await handler.Handle(comandoResult.Value);
+        
+        if (resultHandler.IsFailure)
+            return BadRequest(resultHandler.Error);
+        
+        return Ok("Chamado enviado a fila com sucesso!");
     }
 }

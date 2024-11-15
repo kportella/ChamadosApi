@@ -11,10 +11,17 @@ public class GravarChamadoHandler(RabbitMQProducer producer)
         var chamado = new Chamado(command.Titulo, command.Descricao, command.TipoManutencao, command.Criticidade, 
             command.Tecnico, command.DataAbertura, command.DataFechamento, command.Status, command.Equipamento, 
             command.Localizacao, command.Modelo);
-        
-        // Enviar para a fila do rabbitMQ
-        await producer.ProduceMessage(chamado);
-        
+
+        try
+        {
+            // Enviar para a fila do rabbitMQ
+            await producer.ProduceMessage(chamado);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure(ex.Message);
+        }
+
         return Result.Success();
     }
 }
