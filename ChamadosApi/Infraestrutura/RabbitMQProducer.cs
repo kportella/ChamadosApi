@@ -15,11 +15,18 @@ public class RabbitMQProducer
         await using var connection = await factory.CreateConnectionAsync();
         await using var channel = await connection.CreateChannelAsync();
         
-        await channel.QueueDeclareAsync(queue: "fila_chamados",
-            durable: false,
+        var args = new Dictionary<string, object>
+        {
+            { "x-dead-letter-exchange", "dlx_chamados" }
+            // Opcional: { "x-message-ttl", 30000 } // TTL de 30 segundos
+        };
+        
+        await channel.QueueDeclareAsync(
+            queue: "fila_chamados",
+            durable: true,
             exclusive: false,
             autoDelete: false,
-            arguments: null);
+            arguments: args);
 
         var message = JsonSerializer.Serialize(chamado);
         var body = Encoding.UTF8.GetBytes(message);
