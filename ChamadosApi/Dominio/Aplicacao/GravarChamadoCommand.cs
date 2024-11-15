@@ -35,13 +35,50 @@ public class GravarChamadoCommand
         string tecnico, DateTime dataAbertura, DateTime dataFechamento, string status, string equipamento,
         string localizacao, string modelo)
     {
-        var tipoManutencaoEnum = Enum.Parse<ETipoManutencao>(tipoManutencao);
-        var criticidadeEnum = Enum.Parse<ECriticidade>(criticidade);
-        var statusEnum = Enum.Parse<EStatus>(status);
+        if (Enum.TryParse<ETipoManutencao>(tipoManutencao, out var tipoManutencaoEnum))
+            return Result.Failure<GravarChamadoCommand>("Tipo de Manutenção inválido.");
+
+        if (Enum.TryParse<ECriticidade>(criticidade, out var criticidadeEnum))
+            return Result.Failure<GravarChamadoCommand>("Criticidade inválida.");
+        
+        if (Enum.TryParse<EStatus>(tecnico, out var statusEnum))
+            return Result.Failure<GravarChamadoCommand>("Status inválido.");
+
+        var resultadoValidacao = Validar(titulo, descricao, tecnico, dataAbertura, dataFechamento, equipamento, 
+            localizacao, modelo);
+        
+        if (resultadoValidacao.IsFailure)
+            return Result.Failure<GravarChamadoCommand>(resultadoValidacao.Error);
 
         return new GravarChamadoCommand(titulo, descricao, tipoManutencaoEnum, criticidadeEnum, tecnico, dataAbertura,
-            dataFechamento, statusEnum, equipamento,
-            localizacao, modelo);
+            dataFechamento, statusEnum, equipamento, localizacao, modelo);
+    }
+
+    private static Result Validar(string titulo, string descricao, string tecnico, DateTime dataAbertura, 
+        DateTime dataFechamento, string equipamento, string localizacao, string modelo)
+    {
+        if (string.IsNullOrWhiteSpace(titulo))
+            return Result.Failure("Titulo deve ser informado.");
+        
+        if (string.IsNullOrWhiteSpace(descricao))
+            return Result.Failure("Descricao deve ser informado.");
+        
+        if (string.IsNullOrWhiteSpace(tecnico))
+            return Result.Failure("Tecnico deve ser informado.");
+        
+        if (string.IsNullOrWhiteSpace(equipamento))
+            return Result.Failure("Equipamento deve ser informado.");
+        
+        if (string.IsNullOrWhiteSpace(localizacao))
+            return Result.Failure("Localizacao deve ser informado.");
+        
+        if (string.IsNullOrWhiteSpace(modelo))
+            return Result.Failure("Modelo deve ser informado.");
+        
+        if (dataFechamento < DateTime.Now)
+            return Result.Failure("Data deve ser maior que o dia de hoje.");
+        
+        return Result.Success();
     }
 }
 
