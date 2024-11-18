@@ -19,6 +19,7 @@ public class GravarChamadoHandler(RabbitMQProducer producer)
         }
         catch (Exception ex)
         {
+            // Tratamento de exceção
             return Result.Failure(ex.Message);
         }
 
