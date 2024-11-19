@@ -35,13 +35,13 @@ public class GravarChamadoCommand
         string tecnico, DateTime dataAbertura, DateTime dataFechamento, string status, string equipamento,
         string localizacao, string modelo)
     {
-        if (!Enum.TryParse<ETipoManutencao>(tipoManutencao, out var tipoManutencaoEnum) || !Enum.IsDefined(typeof(ETipoManutencao), tipoManutencao))
+        if (!Enum.TryParse<ETipoManutencao>(tipoManutencao, out var tipoManutencaoEnum) || Enum.IsDefined(typeof(ETipoManutencao), tipoManutencao))
             return Result.Failure<GravarChamadoCommand>("Tipo de Manutenção inválido.");
 
-        if (!Enum.TryParse<ECriticidade>(criticidade, out var criticidadeEnum) || !Enum.IsDefined(typeof(ECriticidade), criticidade))
+        if (!Enum.TryParse<ECriticidade>(criticidade, out var criticidadeEnum) || Enum.IsDefined(typeof(ECriticidade), criticidade))
             return Result.Failure<GravarChamadoCommand>("Criticidade inválida.");
         
-        if (!Enum.TryParse<EStatus>(status, out var statusEnum) || !Enum.IsDefined(typeof(EStatus), status))
+        if (!Enum.TryParse<EStatus>(status, out var statusEnum) || Enum.IsDefined(typeof(EStatus), status))
             return Result.Failure<GravarChamadoCommand>("Status inválido.");
 
         var resultadoValidacao = Validar(titulo, descricao, tecnico, dataAbertura, dataFechamento, equipamento, 

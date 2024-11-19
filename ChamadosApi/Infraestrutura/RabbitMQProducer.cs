@@ -19,16 +19,22 @@ public class RabbitMQProducer
         await using var connection = await factory.CreateConnectionAsync();
         await using var channel = await connection.CreateChannelAsync();
         
+        var args = new Dictionary<string, object>
+        {
+            { "x-dead-letter-exchange", "dlx_chamados" }
+        };
         
         // Declara a fila
         // Durable: Mensagem fica no disco, mesmo quando o rabbit é reinicializado
         // Exclusive: Define que a fila não é exclusiva a essa conexão
         // AutoDelete: Fila não vai ser delatada automaticante quando não tiver mais consumidores
+        // Arguments: Define os valores do dead letter exchange
         await channel.QueueDeclareAsync(
             queue: "fila_chamados",
             durable: true,
             exclusive: false,
-            autoDelete: false);
+            autoDelete: false,
+            arguments: args);
 
         // Objeto é serializado e transformado em um array de bytes
         // Marshaling
